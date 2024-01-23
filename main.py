@@ -5,8 +5,8 @@ import random
 
 number_of_players = 2
 board_matrix = (3, 3)
-# symbols_in_series_for_a_win = (*board_matrix, min(board_matrix))
-symbols_in_series_for_a_win = (4, 4, 3)
+symbols_in_series_for_a_win = (*board_matrix, min(board_matrix))
+# symbols_in_series_for_a_win = (4, 4, 3)
 size_of_box = 250 - int(sum(board_matrix) / 2) * 18
 symbol_size = (size_of_box - size_of_box / 3) / 2
 symbol_thickness = (size_of_box - size_of_box / 3) / 3
