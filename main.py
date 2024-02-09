@@ -27,13 +27,15 @@ class TicTacToe:
         self.last_winner = None
 
         self.window = Tk()
+        self.window.geometry('600x400')
         self.window.title('Tic-Tac-Toe')
         self.window.bind('<Button-1>', self.click)              # user input
         self.window.bind('<Button-3>', self.click_reset)        # user input
 
-        self.canvas = Canvas(self.window, width=size_of_box * board_matrix[0], height=size_of_box * board_matrix[1] + size_of_box / 2)
-        self.canvas.pack()
-        self.game_status = 0
+        # self.canvas = Canvas(self.window, width=size_of_box * board_matrix[0], height=size_of_box * board_matrix[1] + size_of_box / 2)
+        # self.canvas.pack()
+        # self.game_status = 0
+        self.game_status = -1
         self.show_welcome_canvas()
 
     def mainloop(self):
@@ -63,7 +65,16 @@ class TicTacToe:
         self.print_player_turn()
 
     def show_welcome_canvas(self):
-        self.canvas.create_text(size_of_box * board_matrix[0] / 2, size_of_box / 2, font="cmr 60 bold", text='HELLO', tags='welcome')
+        list_number_of_players = [n for n in range(2, 6)]
+        list_board_matrix = [n for n in range(3, 11)]
+        list_symbols_in_series_for_a_win = list_board_matrix + [max(list_board_matrix) + 1]
+        clicked = IntVar()
+        clicked.set(2)
+        paddings = {'padx': 25, 'pady': 25}
+        label = Label(self.window, text='Select number of players')
+        label.grid(column=0, row=0, sticky=W, **paddings)
+        option_menu = OptionMenu(self.window, clicked, *list_number_of_players)
+        option_menu.grid(column=2, row=0, sticky=W, **paddings)
 
     def play_again(self):
         self.starting_player += 1
@@ -216,6 +227,8 @@ class TicTacToe:
             self.initialize_board()
             self.game_status = 1
             self.initialize_grid()
+        elif self.game_status == -1:
+            ...
         else:  # Play Again
             self.canvas.delete("all")
             self.play_again()
