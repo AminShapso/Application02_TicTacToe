@@ -4,12 +4,19 @@ import numpy as np
 import random
 
 
+# ## For future update:
+# Add 3 buttons
+# Window size = FHD
+# Add button for restart
+# option for timer
+
+
 class TicTacToe:
     def __init__(self, root):
         self.root = root
         self.root.title('Tic-Tac-Toe')
         self.root.bind('<Button-1>', self.click)  # user input
-        self.root.bind('<Button-3>', self.click_reset)  # user input
+        self.root.bind('<Button-3>', self.click_reset_mouse)  # user input
 
         self.list_number_of_players = [2, 2, 3, 4, 5]
         self.list_board_matrix = [3, 3, 4, 5, 6, 7, 8, 9, 10]
@@ -52,6 +59,7 @@ class TicTacToe:
         self.dropdown_symbols_for_win_y = None
         self.dropdown_symbols_for_win_z = None
         self.button_submit = None
+        self.button_reset = None
         self.show_welcome_canvas()
 
     def show_welcome_canvas(self):
@@ -103,9 +111,9 @@ class TicTacToe:
         self.dropdown_symbols_for_win_y.grid_remove()
         self.dropdown_symbols_for_win_z.grid_remove()
         self.button_submit.grid_remove()
-        self.canvas.grid(row=0, column=0)
+        self.canvas.grid(row=1, column=0)
         self.initialize_board()
-        self.game_status = 2
+        self.game_status = 1
         self.initialize_grid()
 
     def print_player_turn(self):
@@ -115,6 +123,9 @@ class TicTacToe:
 
     def initialize_board(self):
         self.canvas.config(width=self.size_of_box * self.board_matrix[0], height=self.size_of_box * self.board_matrix[1] + self.size_of_box / 2)
+        self.button_reset = ttk.Button(self.root, text="Reset", command=self.click_reset, style='my.TButton')
+        self.button_reset.grid(row=0, column=0)
+        # self.button_reset.place(x=self.size_of_box / 5, y=self.size_of_box / 7)
         self.player_turn = 0
         self.board_status = np.zeros(shape=self.board_matrix) - 1
         self.starting_player = 0
@@ -184,7 +195,7 @@ class TicTacToe:
             score_text += f'Player {i + 1}:\t\t' + str(self.player_scores[i]) + '\n'
         score_text += 'Tie:\t\t' + str(self.tie_score)
         self.canvas.create_text(self.size_of_box * self.board_matrix[0] / 2, 2 * self.size_of_box * self.board_matrix[1] / 4, font="cmr 25 bold", fill=self.green_color, text=score_text)
-        self.game_status = 4
+        self.game_status = 3
 
         score_text = 'Click to play again \n'
         self.canvas.create_text(self.size_of_box * self.board_matrix[0] / 2, 15 * self.size_of_box * self.board_matrix[1] / 16, font="cmr 20 bold", fill=self.generic_color, text=score_text)
@@ -245,11 +256,6 @@ class TicTacToe:
         if self.game_status == 0:
             pass
         elif self.game_status == 1:
-            self.canvas.delete("all")
-            self.initialize_board()
-            self.game_status = 2
-            self.initialize_grid()
-        elif self.game_status == 2:
             if self.size_of_box / 2 < event.y < self.board_matrix[1] * self.size_of_box + self.size_of_box / 2 and event.x < self.board_matrix[0] * self.size_of_box:
                 grid_position = [event.x, event.y]
                 logical_position = self.convert_grid_to_logical_position(grid_position)
@@ -258,13 +264,13 @@ class TicTacToe:
                         self.draw_player(self.player_turn, logical_position)
                         self.board_status[logical_position[0]][logical_position[1]] = self.player_turn
                     if self.is_gameover():
-                        self.game_status = 3
+                        self.game_status = 2
                         if bool(self.last_winner):
                             grid_position = self.convert_logical_to_grid_position_for_line(self.last_winner)
                             self.canvas.create_line(grid_position[0][0], grid_position[0][1], grid_position[1][0], grid_position[1][1], width=self.symbol_thickness / 3)
                             self.canvas.delete("player_turn")
                             self.canvas.create_text(self.size_of_box * self.board_matrix[0] / 2, self.size_of_box / 4, font="cmr 30 bold", fill=self.symbol_colors[self.player_turn],
-                                                    text=f'The winner is player number {self.player_turn + 1}!!!', tags="player_turn")
+                                                    text=f'The winner is player number {self.player_turn + 1}!', tags="player_turn")
                         else:
                             self.canvas.delete("player_turn")
                             self.canvas.create_text(self.size_of_box * self.board_matrix[0] / 2, self.size_of_box / 4, font="cmr 30 bold", text=f'It is a tie!', tags="player_turn")
@@ -273,21 +279,25 @@ class TicTacToe:
                         if self.player_turn == self.number_of_players:
                             self.player_turn = 0
                         self.print_player_turn()
-        elif self.game_status == 3:
+        elif self.game_status == 2:
             self.display_gameover()
             self.player_wins = [False] * self.number_of_players
             self.last_winner = ()
-            self.game_status = 4
+            self.game_status = 3
         else:  # Play Again
             self.canvas.delete("all")
             self.play_again()
-            self.game_status = 2
+            self.game_status = 1
 
-    def click_reset(self, _):
+    def click_reset(self):
         self.canvas.delete("all")
-        self.game_status = 1
+        self.canvas.grid_remove()
+        self.button_reset.grid_remove()
+        self.game_status = 0
         self.show_welcome_canvas()
 
+    def click_reset_mouse(self, _):
+        self.click_reset()
 
 game_instance = Tk()
 app = TicTacToe(game_instance)
