@@ -60,6 +60,8 @@ class TicTacToe:
         self.dropdown_symbols_for_win_z = None
         self.button_submit = None
         self.button_reset = None
+        self.button_reset2 = None
+        self.button_reset3 = None
         self.show_welcome_canvas()
 
     def show_welcome_canvas(self):
@@ -118,13 +120,20 @@ class TicTacToe:
 
     def print_player_turn(self):
         self.canvas.delete("player_turn")
-        self.canvas.create_text(self.size_of_box * self.board_matrix[0] / 2, self.size_of_box / 5, font="cmr 25 bold", fill=self.symbol_colors[self.player_turn],
+        self.canvas.create_text(self.size_of_box * self.board_matrix[0] / 2, self.size_of_box / 6, font="cmr 25 bold", fill=self.symbol_colors[self.player_turn],
                                 text=f'Player turn is {self.player_turn + 1}', tags="player_turn")
 
     def initialize_board(self):
         self.canvas.config(width=self.size_of_box * self.board_matrix[0], height=self.size_of_box * self.board_matrix[1] + self.size_of_box / 2)
-        self.button_reset = ttk.Button(self.root, text="Reset", command=self.click_reset, style='my.TButton')
-        self.button_reset.grid(row=0, column=0)
+        self.button_reset = ttk.Button(self.root, text="Reset Board", command=self.click_reset_board, style='my.TButton')
+        self.button_reset.grid(row=0, column=0, padx=10, pady=10, sticky=SW)
+
+        self.button_reset2 = ttk.Button(self.root, text="Reset Results", command=self.click_reset_results, style='my.TButton')
+        self.button_reset2.grid(row=0, column=0, padx=0, pady=10, sticky=S)
+
+        self.button_reset3 = ttk.Button(self.root, text="Reset Game", command=self.click_reset_game, style='my.TButton')
+        self.button_reset3.grid(row=0, column=0, padx=10, pady=10, sticky=SE)
+
         # self.button_reset.place(x=self.size_of_box / 5, y=self.size_of_box / 7)
         self.player_turn = 0
         self.board_status = np.zeros(shape=self.board_matrix) - 1
@@ -152,17 +161,17 @@ class TicTacToe:
 
     def draw_x(self, grid_position, color):
         self.canvas.create_line(grid_position[0] - self.symbol_size, grid_position[1] - self.symbol_size, grid_position[0] + self.symbol_size, grid_position[1] + self.symbol_size,
-                                width=self.symbol_thickness, fill=color)
+                                width=self.symbol_thickness, fill=color, tags="symbols")
         self.canvas.create_line(grid_position[0] - self.symbol_size, grid_position[1] + self.symbol_size, grid_position[0] + self.symbol_size, grid_position[1] - self.symbol_size,
-                                width=self.symbol_thickness, fill=color)
+                                width=self.symbol_thickness, fill=color, tags="symbols")
 
     def draw_o(self, grid_position, color):
         self.canvas.create_oval(grid_position[0] - self.symbol_size, grid_position[1] - self.symbol_size, grid_position[0] + self.symbol_size, grid_position[1] + self.symbol_size,
-                                width=self.symbol_thickness, outline=color)
+                                width=self.symbol_thickness, outline=color, tags="symbols")
 
     def draw_rc(self, grid_position, color):
         self.canvas.create_rectangle(grid_position[0] - self.symbol_size, grid_position[1] - self.symbol_size, grid_position[0] + self.symbol_size, grid_position[1] + self.symbol_size,
-                                     width=self.symbol_thickness, outline=color)
+                                     width=self.symbol_thickness, outline=color, tags="symbols")
 
     def draw_player(self, player_number, logical_position):
         grid_position = self.convert_logical_to_grid_position(logical_position)
@@ -289,15 +298,29 @@ class TicTacToe:
             self.play_again()
             self.game_status = 1
 
-    def click_reset(self):
+    # ## Reset game
+    def click_reset_game(self):
         self.canvas.delete("all")
         self.canvas.grid_remove()
         self.button_reset.grid_remove()
+        self.button_reset2.grid_remove()
+        self.button_reset3.grid_remove()
         self.game_status = 0
         self.show_welcome_canvas()
 
+    # ## Reset board
+    def click_reset_board(self):
+        self.canvas.delete("symbols")
+        self.board_status = np.zeros(shape=self.board_matrix) - 1
+
+    # ## Reset results
+    def click_reset_results(self):
+        self.player_scores = [0] * self.number_of_players
+        self.tie_score = 0
+
     def click_reset_mouse(self, _):
-        self.click_reset()
+        self.click_reset_game()
+
 
 game_instance = Tk()
 app = TicTacToe(game_instance)
