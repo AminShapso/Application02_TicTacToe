@@ -261,7 +261,6 @@ class TicTacToe:
         return any(self.player_wins) or self.tie
 
     def click(self, event):
-        print(f'game_status = {self.game_status}')
         if self.game_status == 0:
             pass
         elif self.game_status == 1:
